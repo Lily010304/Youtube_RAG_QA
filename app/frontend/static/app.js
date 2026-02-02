@@ -16,7 +16,9 @@ document.addEventListener("DOMContentLoaded", function() {
         spinner.style.display = "flex";
         answerDiv.innerHTML = "";
         try{
-            const response = await fetch('/ask', {
+            const apiBase = (window.API_BASE_URL || "").replace(/\/$/, "");
+            const endpoint = `${apiBase}/ask`;
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
