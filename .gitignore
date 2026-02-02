@@ -1,1 +1,13 @@
 .env
+
+# Local virtual environments
+qa/
+.venv/
+venv/
+
+# Local clones / nested repos (e.g., Hugging Face Space)
+app/backend/QA_Backend/
+
+# Python cache
+**/__pycache__/
+*.pyc
