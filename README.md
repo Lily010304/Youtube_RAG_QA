@@ -2,6 +2,7 @@
 
 Ask questions about any YouTube video using its transcript. This project uses a simple RAG pipeline (transcript → chunks → embeddings → FAISS retrieval → answer generation) and stores Q&A history in MongoDB.
 
+Origin Code from : [Link](https://github.com/hashemk2/Youtube-Qa-RAG)
 ## Features
 - Fetches YouTube transcripts and answers questions grounded in the content
 - FAISS similarity search for retrieval
