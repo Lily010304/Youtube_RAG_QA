@@ -23,6 +23,61 @@ EMBEDDING_MODEL_ID = "sentence-transformers/all-MiniLM-L6-v2"
 GENERATION_MODEL_ID = "moonshotai/Kimi-K2.5"
 
 
+def _get_ytt_api() -> YouTubeTranscriptApi:
+    """Create a YouTubeTranscriptApi instance.
+
+    In many cloud environments (Render/HF/AWS/etc), YouTube may block requests by IP.
+    If proxy environment variables are present, route transcript requests through a proxy.
+
+    Supported env vars:
+    - WEBSHARE_PROXY_USERNAME / WEBSHARE_PROXY_PASSWORD
+    - WEBSHARE_PROXY_LOCATIONS (optional, comma-separated country codes like "us,de")
+    - YT_HTTP_PROXY_URL / YT_HTTPS_PROXY_URL (generic proxy URLs)
+    """
+
+    webshare_user = (os.getenv("WEBSHARE_PROXY_USERNAME") or "").strip()
+    webshare_pass = (os.getenv("WEBSHARE_PROXY_PASSWORD") or "").strip()
+    webshare_locations = (os.getenv("WEBSHARE_PROXY_LOCATIONS") or "").strip()
+
+    http_proxy_url = (os.getenv("YT_HTTP_PROXY_URL") or "").strip()
+    https_proxy_url = (os.getenv("YT_HTTPS_PROXY_URL") or "").strip()
+
+    if webshare_user and webshare_pass:
+        try:
+            from youtube_transcript_api.proxies import WebshareProxyConfig
+
+            filter_ip_locations = None
+            if webshare_locations:
+                filter_ip_locations = [s.strip() for s in webshare_locations.split(",") if s.strip()]
+
+            return YouTubeTranscriptApi(
+                proxy_config=WebshareProxyConfig(
+                    proxy_username=webshare_user,
+                    proxy_password=webshare_pass,
+                    filter_ip_locations=filter_ip_locations,
+                )
+            )
+        except Exception:
+            # If proxy classes are missing due to an older package version,
+            # fall back to direct mode.
+            return YouTubeTranscriptApi()
+
+    if http_proxy_url or https_proxy_url:
+        try:
+            from youtube_transcript_api.proxies import GenericProxyConfig
+
+            return YouTubeTranscriptApi(
+                proxy_config=GenericProxyConfig(
+                    http_url=http_proxy_url or None,
+                    https_url=https_proxy_url or None,
+                )
+            )
+        except Exception:
+            return YouTubeTranscriptApi()
+
+    return YouTubeTranscriptApi()
+
+
 def _extract_video_id(video_url: str) -> str:
     """Extract a YouTube video id from several common URL formats.
 
@@ -104,7 +159,7 @@ def generate_answer(video_url:str, question: str) -> str:
     try:
         # Get transcript using youtube transcript api
         video_id = _extract_video_id(video_url) # get_transcript(video_id)
-        ytt_api = YouTubeTranscriptApi()
+        ytt_api = _get_ytt_api()
         transcript = ytt_api.fetch(video_id)
         transcript_list = transcript.to_raw_data()
         full_transcript = " ".join([item['text'] for item in transcript_list])
