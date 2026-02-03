@@ -154,6 +154,19 @@ def _get_embedder() -> SentenceTransformer:
         _embedder = SentenceTransformer(EMBEDDING_MODEL_ID)
     return _embedder
 
+
+def warmup_models() -> None:
+    """Best-effort warmup to reduce cold-start latency in cloud hosts.
+
+    On first request, SentenceTransformer may need to download/load model weights.
+    Doing it once at startup (in a background thread) reduces the chance of 5xx from
+    upstream proxies timing out.
+    """
+    try:
+        _get_embedder()
+    except Exception as e:
+        print(f"Warmup failed: {e}")
+
 def generate_answer(video_url:str, question: str) -> str:
 
     try:

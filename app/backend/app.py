@@ -17,21 +17,30 @@ from fastapi.middleware.cors import CORSMiddleware
 # --- Standard Python Imports ---
 
 # The 'pathlib' library helps create file paths that work correctly on any operating system (Windows, Mac, Linux).
+import asyncio
 from pathlib import Path
 # --- Your Application's Imports ---
 
 # It will contain the core RAG logic.
 try:
     from .model import generate_answer
+    from .model import warmup_models
     from .database import save_query_answer
 except ImportError:
     from model import generate_answer
+    from model import warmup_models
     from database import save_query_answer
 
 #Application setup
 
 # This line creates the main application instance. 'app' is the conventional name.
 app= FastAPI()
+
+
+@app.on_event("startup")
+async def _startup_warmup() -> None:
+    # Warm up heavy models in the background (don't block server start)
+    asyncio.create_task(asyncio.to_thread(warmup_models))
 
 # This adds the CORS middleware to your application.
 # Without this, your browser would block JavaScript requests from the frontend to the backend for security reasons.
