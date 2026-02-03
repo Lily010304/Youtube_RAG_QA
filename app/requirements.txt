@@ -1,0 +1,17 @@
+# --- Web Server ---
+fastapi
+uvicorn
+python-multipart # For form data, good to have with FastAPI
+
+# --- Database & Config ---
+pymongo[srv] # For MongoDB Atlas connection
+python-dotenv # For loading .env files
+
+# --- RAG Pipeline ---
+youtube-transcript-api # To get video transcripts
+langchain # We use its text splitter
+langchain-text-splitters
+faiss-cpu # For fast in-memory vector search
+httpx # To make calls to the Hugging Face API
+numpy # Required by FAISS for numerical operations
+sentence-transformers
