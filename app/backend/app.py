@@ -45,10 +45,14 @@ app.add_middleware(
 
 # --- 2. Path and Directory Configuration ---
 
-_app_dir = Path(__file__).resolve().parent
+# Repo layout:
+# app/
+#   backend/app.py   (this file)
+#   frontend/static/
+#   frontend/templates/
+_app_root = Path(__file__).resolve().parents[1]
 
-# Optional: If you also ship a frontend inside this Space repo, mount it.
-_frontend_dir = _app_dir / "frontend"
+_frontend_dir = _app_root / "frontend"
 _static_dir = _frontend_dir / "static"
 _templates_dir = _frontend_dir / "templates"
 
