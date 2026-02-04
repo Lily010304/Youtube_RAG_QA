@@ -2,6 +2,10 @@
 
 Ask questions about any YouTube video using its transcript. This project uses a simple RAG pipeline (transcript → chunks → embeddings → FAISS retrieval → answer generation) and stores Q&A history in MongoDB.
 
+
+![alt text](image-1.png)
+![alt text](image.png)
+
 Origin Code from : [Link](https://github.com/hashemk2/Youtube-Qa-RAG)
 ## Features
 - Fetches YouTube transcripts and answers questions grounded in the content
@@ -15,7 +19,7 @@ Origin Code from : [Link](https://github.com/hashemk2/Youtube-Qa-RAG)
 YoutubeRAGQA/
 	app/
 		backend/
-			fastApi.py
+			app.py
 			model.py
 			database.py
 		frontend/
@@ -59,7 +63,7 @@ GEN_MODEL_ID=google/flan-t5-base
 ## Run the App
 From the project root:
 ```
-python -m uvicorn app.backend.fastApi:app --reload --host 127.0.0.1 --port 8000
+python -m uvicorn --app-dir . app.backend.app:app --reload --host 127.0.0.1 --port 8000
 ```
 Open: http://127.0.0.1:8000
 

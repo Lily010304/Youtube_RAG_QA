@@ -1,10 +1,12 @@
 # --- Web Server ---
 fastapi
-uvicorn
+uvicorn[standard]
+click
 python-multipart # For form data, good to have with FastAPI
 
 # --- Database & Config ---
-pymongo[srv] # For MongoDB Atlas connection
+pymongo # MongoDB driver
+dnspython # Needed for mongodb+srv:// (Atlas SRV records)
 python-dotenv # For loading .env files
 
 # --- RAG Pipeline ---

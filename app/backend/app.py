@@ -22,14 +22,18 @@ from pathlib import Path
 # --- Your Application's Imports ---
 
 # It will contain the core RAG logic.
+# Prefer package-relative imports; only fall back to absolute package imports when
+# this module is loaded outside the package context. Do not mask missing third-party
+# deps (e.g., 'dotenv') with a broad ImportError handler.
 try:
-    from .model import generate_answer
-    from .model import warmup_models
+    from .model import generate_answer, warmup_models
     from .database import save_query_answer
-except ImportError:
-    from model import generate_answer
-    from model import warmup_models
-    from database import save_query_answer
+except ModuleNotFoundError as e:
+    if e.name in {"app", "backend", "app.backend"}:
+        from app.backend.model import generate_answer, warmup_models
+        from app.backend.database import save_query_answer
+    else:
+        raise
 
 #Application setup
 
